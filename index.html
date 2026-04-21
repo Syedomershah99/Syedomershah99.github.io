@@ -1,0 +1,1503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Syed Omer Shah -- Portfolio</title>
+<meta name="description" content="AI/ML Engineer, Researcher, and Builder. MS in AI at SUNY Buffalo. First-author on arXiv. Open to opportunities." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --desk-0: #070709;
+    --desk-1: #0c0c10;
+    --desk-grain: rgba(255,255,255,0.015);
+    --device-steel: #1a1a1e;
+    --device-edge: #2a2a30;
+    --device-bezel: #050507;
+    --screen-bg: #000;
+    --ink: #f6f6f8;
+    --ink-dim: rgba(246,246,248,0.62);
+    --ink-faint: rgba(246,246,248,0.32);
+    --accent: oklch(0.78 0.12 170);
+    --accent-ink: oklch(0.98 0.02 170);
+    --warm: oklch(0.82 0.14 75);
+    --rule: rgba(255,255,255,0.08);
+    --card: rgba(255,255,255,0.045);
+    --card-hi: rgba(255,255,255,0.08);
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin:0; padding:0; height:100%; background: var(--desk-0); color: var(--ink); font-family: 'Geist', system-ui, sans-serif; overflow: hidden; }
+  body {
+    background:
+      radial-gradient(80% 60% at 50% 40%, #141419 0%, #0a0a0d 55%, #050507 100%);
+  }
+  body::before{
+    content:""; position: fixed; inset:0; pointer-events:none;
+    background-image:
+      radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.04), transparent 50%),
+      radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,0.03), transparent 50%),
+      radial-gradient(1px 1px at 40% 80%, rgba(255,255,255,0.025), transparent 50%);
+    background-size: 220px 220px, 180px 180px, 260px 260px;
+    mix-blend-mode: screen;
+    opacity: 0.7;
+  }
+  #root { height: 100%; width: 100%; }
+  .mono { font-family: 'JetBrains Mono', ui-monospace, monospace; }
+  .tweaks {
+    position: fixed; right: 16px; bottom: 16px; z-index: 9999;
+    width: 260px; background: rgba(18,18,22,0.92); backdrop-filter: blur(16px);
+    border: 1px solid rgba(255,255,255,0.08); border-radius: 14px; padding: 14px;
+    color: var(--ink); font-size: 12px; display: none;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  }
+  .tweaks.open { display: block; }
+  .tweaks h4 { margin: 0 0 10px; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-dim); font-weight: 500; }
+  .tweaks .row { margin-bottom: 10px; }
+  .tweaks label { display:block; font-size: 11px; color: var(--ink-dim); margin-bottom: 6px; }
+  .tweaks .pills { display:flex; gap:6px; flex-wrap: wrap; }
+  .tweaks .pill { padding: 6px 10px; border-radius: 8px; background: rgba(255,255,255,0.05); border: 1px solid transparent; cursor: pointer; font-size: 11px; color: var(--ink); }
+  .tweaks .pill.active { border-color: var(--accent); color: var(--accent-ink); background: color-mix(in oklch, var(--accent) 20%, transparent); }
+  .device, .dock, .statusbar { user-select: none; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script>
+window.TWEAK_DEFAULTS = {
+  "accent": "mint",
+  "wallpaper": "grid",
+  "iconStyle": "tinted"
+};
+</script>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+
+<script type="text/babel">
+// ============ ICONS ============
+const { useMemo } = React;
+
+function IconWrap({ children, size = 28, stroke = 1.6 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none"
+      stroke="currentColor" strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round">
+      {children}
+    </svg>
+  );
+}
+
+const G = {
+  about: (p) => <IconWrap {...p}><circle cx="12" cy="9" r="3.2"/><path d="M5 19c1.2-3.2 4-4.6 7-4.6s5.8 1.4 7 4.6"/></IconWrap>,
+  edu:   (p) => <IconWrap {...p}><path d="M3 9l9-4 9 4-9 4-9-4z"/><path d="M7 11.2V15c0 1.4 2.6 2.6 5 2.6s5-1.2 5-2.6v-3.8"/><path d="M21 9v5"/></IconWrap>,
+  skills:(p) => <IconWrap {...p}><path d="M7 7h10M5 12h14M9 17h6"/><circle cx="7" cy="7" r="1.3"/><circle cx="17" cy="7" r="1.3"/><circle cx="5" cy="12" r="1.3"/><circle cx="19" cy="12" r="1.3"/><circle cx="9" cy="17" r="1.3"/><circle cx="15" cy="17" r="1.3"/></IconWrap>,
+  exp:   (p) => <IconWrap {...p}><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M9 7V5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/><path d="M3 13h18"/></IconWrap>,
+  research:(p)=> <IconWrap {...p}><circle cx="10" cy="10" r="5"/><path d="M14 14l6 6"/><path d="M8 10h4"/><path d="M10 8v4"/></IconWrap>,
+  projects:(p)=> <IconWrap {...p}><path d="M12 3l3 5h6l-4.5 4 2 7L12 16l-6.5 3 2-7L3 8h6z"/></IconWrap>,
+  pubs:  (p) => <IconWrap {...p}><path d="M5 4h9l5 5v11H5z"/><path d="M14 4v5h5"/><path d="M8 13h8M8 17h6"/></IconWrap>,
+  awards:(p) => <IconWrap {...p}><path d="M8 4h8v4a4 4 0 0 1-8 0z"/><path d="M5 4h3v2a3 3 0 0 1-3 3"/><path d="M19 4h-3v2a3 3 0 0 0 3 3"/><path d="M10 14h4l1 6H9z"/></IconWrap>,
+  talks: (p) => <IconWrap {...p}><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0"/><path d="M12 18v3"/></IconWrap>,
+  lead:  (p) => <IconWrap {...p}><path d="M5 21V4"/><path d="M5 4h10l-2 3 2 3H5"/></IconWrap>,
+  contact:(p)=> <IconWrap {...p}><path d="M4 6c0-1 1-2 2-2h2l2 4-2 1a10 10 0 0 0 5 5l1-2 4 2v2c0 1-1 2-2 2C9 18 4 13 4 6z"/></IconWrap>,
+  resume:(p) => <IconWrap {...p}><path d="M12 3v12"/><path d="M7 10l5 5 5-5"/><path d="M5 19h14"/></IconWrap>,
+  linkedin:(p)=> <IconWrap {...p}><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M7 10v7M7 7.5v.1"/><path d="M11 17v-4a2 2 0 0 1 4 0v4"/><path d="M11 10v7"/></IconWrap>,
+  github: (p) => <IconWrap {...p}><path d="M9 19c-4 1-4-2-5.5-2.5M15 21v-3a2.8 2.8 0 0 0-.8-2c2.8-.3 5.8-1.4 5.8-6.2a4.8 4.8 0 0 0-1.3-3.3 4.5 4.5 0 0 0-.1-3.3s-1-.3-3.4 1.3a11.6 11.6 0 0 0-6.2 0C6.6 2.4 5.6 2.7 5.6 2.7a4.5 4.5 0 0 0-.1 3.3A4.8 4.8 0 0 0 4.2 9.3c0 4.8 3 5.9 5.8 6.2-.4.3-.7.9-.8 1.7L9 21"/></IconWrap>,
+  mail:   (p) => <IconWrap {...p}><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></IconWrap>,
+  doc:    (p) => <IconWrap {...p}><path d="M6 3h8l4 4v14H6z"/><path d="M14 3v4h4"/></IconWrap>,
+  chevronLeft:(p)=> <IconWrap {...p}><path d="M14 6l-6 6 6 6"/></IconWrap>,
+  search: (p) => <IconWrap {...p}><circle cx="11" cy="11" r="6"/><path d="M16 16l4 4"/></IconWrap>,
+  lock:   (p) => <IconWrap {...p}><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></IconWrap>,
+  arrowUp:(p)=> <IconWrap {...p}><path d="M12 19V5"/><path d="M6 11l6-6 6 6"/></IconWrap>,
+  bolt:   (p) => <IconWrap {...p}><path d="M13 3L5 14h6l-1 7 8-11h-6z"/></IconWrap>,
+  sliders:(p) => <IconWrap {...p}><path d="M4 6h10M4 12h6M4 18h14"/><circle cx="16" cy="6" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></IconWrap>,
+};
+
+function StatusGlyphs() {
+  return (
+    <div style={{display:'flex',gap:6,alignItems:'center',color:'var(--ink)'}}>
+      <svg width="16" height="10" viewBox="0 0 16 10" fill="currentColor">
+        <rect x="0" y="7" width="2" height="3" rx="0.5"/>
+        <rect x="4" y="5" width="2" height="5" rx="0.5"/>
+        <rect x="8" y="2" width="2" height="8" rx="0.5"/>
+        <rect x="12" y="0" width="2" height="10" rx="0.5" opacity="0.35"/>
+      </svg>
+      <svg width="14" height="10" viewBox="0 0 14 10" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
+        <path d="M1 4.5a9 9 0 0 1 12 0"/>
+        <path d="M3.5 6.8a5 5 0 0 1 7 0"/>
+        <circle cx="7" cy="9" r="0.8" fill="currentColor" stroke="none"/>
+      </svg>
+      <svg width="24" height="11" viewBox="0 0 24 11" fill="none">
+        <rect x="0.5" y="0.5" width="20" height="10" rx="2.5" stroke="currentColor" opacity="0.55"/>
+        <rect x="2" y="2" width="15" height="7" rx="1.3" fill="currentColor"/>
+        <rect x="21.5" y="3.5" width="1.8" height="4" rx="0.6" fill="currentColor" opacity="0.55"/>
+      </svg>
+    </div>
+  );
+}
+
+// ============ DEVICE ============
+function StatusBar({ time, dark = true }) {
+  return (
+    <div className="statusbar" style={{
+      position:'absolute', top:0, left:0, right:0, height:44,
+      display:'flex', alignItems:'center', justifyContent:'space-between',
+      padding:'0 22px', color: 'var(--ink)',
+      zIndex: 20, pointerEvents:'none'
+    }}>
+      <div className="mono" style={{fontSize:13, fontWeight:600, letterSpacing:'0.02em'}}>{time}</div>
+      <StatusGlyphs />
+    </div>
+  );
+}
+
+function SensorPill() {
+  return (
+    <div style={{
+      position:'absolute', top:12, left:'50%', transform:'translateX(-50%)',
+      width: 86, height: 22, borderRadius: 14,
+      background: '#000',
+      boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.04)',
+      zIndex: 30,
+      display:'flex', alignItems:'center', justifyContent:'space-between',
+      padding:'0 10px'
+    }}>
+      <div style={{width:6,height:6,borderRadius:'50%', background:'#0a0a0c', boxShadow:'inset 0 0 0 1px rgba(255,255,255,0.08)'}}/>
+      <div style={{width:8,height:8,borderRadius:'50%', background:'#0a0a0c', boxShadow:'inset 0 0 0 1px rgba(255,255,255,0.08)'}}/>
+    </div>
+  );
+}
+
+function Device({ children, scale = 1 }) {
+  return (
+    <div className="device" style={{
+      position: 'relative',
+      width: 414, height: 868,
+      transform: `scale(${scale})`,
+      transformOrigin: 'center center',
+    }}>
+      <div style={{position:'absolute', left:-2, top:130, width:3, height:38, borderRadius:2, background:'#111114', boxShadow:'inset 0 1px 0 rgba(255,255,255,0.06)'}}/>
+      <div style={{position:'absolute', left:-2, top:200, width:3, height:62, borderRadius:2, background:'#111114', boxShadow:'inset 0 1px 0 rgba(255,255,255,0.06)'}}/>
+      <div style={{position:'absolute', left:-2, top:278, width:3, height:62, borderRadius:2, background:'#111114', boxShadow:'inset 0 1px 0 rgba(255,255,255,0.06)'}}/>
+      <div style={{position:'absolute', right:-2, top:180, width:3, height:90, borderRadius:2, background:'#111114', boxShadow:'inset 0 1px 0 rgba(255,255,255,0.06)'}}/>
+
+      <div style={{
+        position:'absolute', inset:0,
+        borderRadius: 58,
+        background: 'linear-gradient(135deg, #2a2a30 0%, #16161a 45%, #0f0f12 100%)',
+        padding: 8,
+        boxShadow: '0 1px 0 rgba(255,255,255,0.06) inset, 0 0 0 1px rgba(255,255,255,0.03), 0 40px 80px -20px rgba(0,0,0,0.9), 0 80px 120px -40px rgba(0,0,0,0.7)'
+      }}>
+        <div style={{
+          position:'absolute', inset: 4,
+          borderRadius: 54,
+          background: '#050507',
+          padding: 3,
+          boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.04)'
+        }}>
+          <div style={{
+            position:'relative',
+            width: '100%', height: '100%',
+            borderRadius: 50,
+            overflow: 'hidden',
+            background: 'var(--screen-bg)'
+          }}>
+            {children}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function HomeBar({ onTap, light = false }) {
+  return (
+    <div onClick={onTap} style={{
+      position:'absolute', bottom: 8, left:'50%', transform:'translateX(-50%)',
+      width: 134, height: 5, borderRadius: 3,
+      background: light ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.35)',
+      zIndex: 50, cursor: 'pointer'
+    }}/>
+  );
+}
+
+// ============ LOCKSCREEN ============
+function Wallpaper({ kind }) {
+  if (kind === 'grid') {
+    return (
+      <div style={{position:'absolute', inset:0, background:'#05060a'}}>
+        <svg width="100%" height="100%" viewBox="0 0 414 868" preserveAspectRatio="xMidYMid slice"
+             style={{position:'absolute', inset:0}}>
+          <defs>
+            <radialGradient id="wg" cx="50%" cy="30%" r="80%">
+              <stop offset="0%" stopColor="#0e1930" stopOpacity="1"/>
+              <stop offset="60%" stopColor="#060814" stopOpacity="1"/>
+              <stop offset="100%" stopColor="#020205" stopOpacity="1"/>
+            </radialGradient>
+            <pattern id="wgrid" x="0" y="0" width="36" height="36" patternUnits="userSpaceOnUse">
+              <path d="M36 0H0V36" fill="none" stroke="rgba(120,170,255,0.06)" strokeWidth="0.6"/>
+            </pattern>
+            <radialGradient id="wglow" cx="50%" cy="35%" r="45%">
+              <stop offset="0%" stopColor="rgba(80,150,255,0.22)"/>
+              <stop offset="100%" stopColor="rgba(80,150,255,0)"/>
+            </radialGradient>
+          </defs>
+          <rect width="414" height="868" fill="url(#wg)"/>
+          <rect width="414" height="868" fill="url(#wgrid)"/>
+          <rect width="414" height="868" fill="url(#wglow)"/>
+          {Array.from({length: 28}).map((_,i)=>{
+            const x = (i*53 + 23) % 400 + 7;
+            const y = (i*137 + 51) % 820 + 20;
+            return <circle key={i} cx={x} cy={y} r={i%4===0?1.6:1} fill="rgba(140,190,255,0.45)" opacity={0.3+((i%5)*0.12)}/>
+          })}
+          {Array.from({length: 12}).map((_,i)=>{
+            const x1 = (i*71+30)%400+7, y1 = (i*193+60)%820+20;
+            const x2 = (i*113+55)%400+7, y2 = (i*227+120)%820+20;
+            return <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(140,190,255,0.08)" strokeWidth="0.5"/>
+          })}
+        </svg>
+      </div>
+    );
+  }
+  if (kind === 'topography') {
+    return (
+      <div style={{position:'absolute', inset:0, background:'#060608'}}>
+        <svg width="100%" height="100%" viewBox="0 0 414 868" preserveAspectRatio="xMidYMid slice" style={{position:'absolute',inset:0}}>
+          <defs>
+            <radialGradient id="tg" cx="50%" cy="60%" r="70%">
+              <stop offset="0%" stopColor="#1a1418"/>
+              <stop offset="100%" stopColor="#060608"/>
+            </radialGradient>
+          </defs>
+          <rect width="414" height="868" fill="url(#tg)"/>
+          {Array.from({length: 14}).map((_,i)=>(
+            <ellipse key={i} cx="207" cy={480+i*8} rx={60+i*22} ry={20+i*6}
+                     fill="none" stroke="rgba(255,255,255,0.05)" strokeWidth="0.8"/>
+          ))}
+        </svg>
+      </div>
+    );
+  }
+  return (
+    <div style={{position:'absolute', inset:0,
+      background: 'radial-gradient(100% 70% at 50% 30%, #18181e 0%, #0a0a0d 60%, #050507 100%)'
+    }}/>
+  );
+}
+
+function NotificationCard({ app, title, body, delay, tint }) {
+  const [show, setShow] = React.useState(false);
+  React.useEffect(() => { const t = setTimeout(()=>setShow(true), delay); return ()=>clearTimeout(t); }, [delay]);
+  return (
+    <div style={{
+      opacity: show ? 1 : 0,
+      transform: show ? 'translateY(0)' : 'translateY(-18px)',
+      transition: 'opacity 0.5s ease, transform 0.6s cubic-bezier(0.2,0.8,0.2,1)',
+      background: 'rgba(20,20,26,0.55)',
+      backdropFilter: 'blur(24px)', WebkitBackdropFilter: 'blur(24px)',
+      border: '1px solid rgba(255,255,255,0.08)',
+      borderRadius: 18, padding: '12px 14px',
+      marginBottom: 8,
+      display:'flex', gap:12, alignItems:'flex-start'
+    }}>
+      <div style={{
+        width: 34, height: 34, borderRadius: 9,
+        background: tint, color:'#fff',
+        display:'flex', alignItems:'center', justifyContent:'center',
+        flexShrink: 0,
+        fontSize: 11, fontWeight: 700, letterSpacing:'0.04em', fontFamily:'JetBrains Mono, monospace'
+      }}>{app.slice(0,2).toUpperCase()}</div>
+      <div style={{flex:1, minWidth:0}}>
+        <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:2}}>
+          <span style={{fontSize:12, fontWeight:600, color:'var(--ink)'}}>{app}</span>
+          <span className="mono" style={{fontSize:10, color:'var(--ink-faint)'}}>now</span>
+        </div>
+        <div style={{fontSize:13.5, fontWeight:500, color:'var(--ink)', marginBottom:2, lineHeight:1.25}}>{title}</div>
+        <div style={{fontSize:12.5, color:'var(--ink-dim)', lineHeight:1.3}}>{body}</div>
+      </div>
+    </div>
+  );
+}
+
+function LockScreen({ onUnlock, wallpaper }) {
+  const [time, setTime] = React.useState('');
+  const [date, setDate] = React.useState('');
+  const [drag, setDrag] = React.useState(0);
+  const [dragging, setDragging] = React.useState(false);
+  const startY = React.useRef(0);
+
+  React.useEffect(()=>{
+    const update = () => {
+      const d = new Date();
+      let h = d.getHours(); const m = d.getMinutes();
+      setTime(`${h}:${m.toString().padStart(2,'0')}`);
+      const wd = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][d.getDay()];
+      const mo = ['January','February','March','April','May','June','July','August','September','October','November','December'][d.getMonth()];
+      setDate(`${wd}, ${mo} ${d.getDate()}`);
+    };
+    update();
+    const i = setInterval(update, 30000);
+    return ()=> clearInterval(i);
+  },[]);
+
+  const onStart = (y) => { startY.current = y; setDragging(true); };
+  const onMove = (y) => {
+    if (!dragging) return;
+    const dy = Math.min(0, y - startY.current);
+    setDrag(dy);
+    if (dy < -200) { setDragging(false); setDrag(-868); setTimeout(onUnlock, 360); }
+  };
+  const onEnd = () => {
+    if (!dragging) return;
+    if (drag < -120) { setDrag(-868); setTimeout(onUnlock, 360); }
+    else { setDrag(0); }
+    setDragging(false);
+  };
+
+  return (
+    <div
+      onMouseDown={(e)=>onStart(e.clientY)}
+      onMouseMove={(e)=>onMove(e.clientY)}
+      onMouseUp={onEnd} onMouseLeave={onEnd}
+      onTouchStart={(e)=>onStart(e.touches[0].clientY)}
+      onTouchMove={(e)=>onMove(e.touches[0].clientY)}
+      onTouchEnd={onEnd}
+      style={{
+        position:'absolute', inset:0, overflow:'hidden',
+        transform: `translateY(${drag}px)`,
+        transition: dragging ? 'none' : 'transform 0.42s cubic-bezier(0.2,0.8,0.2,1)',
+        cursor: 'grab'
+      }}>
+      <Wallpaper kind={wallpaper}/>
+      <StatusBar time={time} />
+      <div style={{position:'absolute', top:72, left:0, right:0, textAlign:'center', color:'var(--ink)'}}>
+        <div className="mono" style={{fontSize:13, color:'var(--ink-dim)', letterSpacing:'0.08em', textTransform:'uppercase', marginBottom:6}}>{date}</div>
+        <div style={{fontSize:86, fontWeight:300, lineHeight:1, letterSpacing:'-0.04em'}}>{time}</div>
+      </div>
+      <div style={{position:'absolute', top:260, left:0, right:0, textAlign:'center', padding:'0 24px'}}>
+        <div style={{fontSize:28, fontWeight:500, letterSpacing:'-0.02em', color:'var(--ink)'}}>Syed Omer Shah</div>
+        <div className="mono" style={{fontSize:11.5, color:'var(--ink-dim)', marginTop:6, letterSpacing:'0.06em'}}>
+          AI/ML ENGINEER &middot; RESEARCHER &middot; BUILDER
+        </div>
+      </div>
+      <div style={{position:'absolute', top:360, left:12, right:12}}>
+        <NotificationCard app="arXiv" title="New paper published" body="MolFM-Lite -- 0.956 AUC. Multi-modal Transformer for molecules."
+          delay={600} tint="linear-gradient(135deg,#b8312f,#8a1f1d)"/>
+        <NotificationCard app="Ampere" title="Internship offer accepted" body="Ampere Computing -- AI Software Engineer -- Summer 2026"
+          delay={1200} tint="linear-gradient(135deg,#4a5568,#2d3748)"/>
+        <NotificationCard app="AWS" title="Deliver Results Award" body="Recognized at re:Invent 2025"
+          delay={1800} tint="linear-gradient(135deg,#d97706,#92400e)"/>
+      </div>
+      <div style={{
+        position:'absolute', bottom: 38, left:0, right:0, textAlign:'center',
+        color:'var(--ink-dim)', fontSize: 12.5,
+        animation: 'bobUp 2.6s ease-in-out infinite'
+      }}>
+        <div style={{marginBottom:6, opacity: 0.6}}>
+          <svg width="24" height="12" viewBox="0 0 24 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" style={{margin:'0 auto', display:'block'}}>
+            <path d="M4 9l8-6 8 6"/>
+          </svg>
+        </div>
+        Swipe up to unlock
+      </div>
+      <HomeBar light onTap={()=>{ setDrag(-868); setTimeout(onUnlock, 360);} }/>
+      <style>{`
+        @keyframes bobUp {
+          0%,100% { transform: translateY(0); opacity: 0.8; }
+          50% { transform: translateY(-6px); opacity: 1; }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// ============ HOMESCREEN ============
+const APPS = [
+  { id:'about',    name:'About',      icon: G.about,    tint: ['#4a7cff','#2a4cc8'] },
+  { id:'edu',      name:'Education',  icon: G.edu,      tint: ['#3bb5a0','#1d6b60'] },
+  { id:'skills',   name:'Skills',     icon: G.skills,   tint: ['#8b6bf0','#553aa6'] },
+  { id:'exp',      name:'Experience', icon: G.exp,      tint: ['#e07a3c','#8c421d'] },
+  { id:'research', name:'Research',   icon: G.research, tint: ['#4cc2e6','#1f6b87'] },
+  { id:'projects', name:'Projects',   icon: G.projects, tint: ['#f0658e','#973150'] },
+  { id:'pubs',     name:'Publications',icon: G.pubs,    tint: ['#9ea3ad','#555a66'] },
+  { id:'awards',   name:'Awards',     icon: G.awards,   tint: ['#e8b54a','#8a6620'] },
+  { id:'talks',    name:'Talks',      icon: G.talks,    tint: ['#e05c5c','#8a2a2a'] },
+  { id:'lead',     name:'Leadership', icon: G.lead,     tint: ['#6cc17a','#2e6b3a'] },
+  { id:'contact',  name:'Contact',    icon: G.contact,  tint: ['#4aa3c4','#1f5770'] },
+  { id:'resume',   name:'Resume',     icon: G.resume,   tint: ['#d97aa8','#7f3860'] },
+];
+
+const DOCK = [
+  { id:'linkedin', name:'LinkedIn', icon: G.linkedin, tint:['#2a6fb8','#143b66'], href:'https://linkedin.com/in/syed-omer-shah' },
+  { id:'github',   name:'GitHub',   icon: G.github,   tint:['#3a3f4a','#1a1d22'], href:'https://github.com/Syedomershah99' },
+  { id:'mail',     name:'Mail',     icon: G.mail,     tint:['#4aa3d4','#1f5f80'], href:'mailto:syedomer@buffalo.edu' },
+  { id:'resume-dl',name:'Resume',   icon: G.doc,      tint:['#9aa0aa','#50545c'], app:'resume' },
+];
+
+function AppIcon({ def, onOpen, style = 'tinted', small = false }) {
+  const [g1, g2] = def.tint;
+  const Icon = def.icon;
+  const size = small ? 52 : 60;
+  const bg = style === 'flat' ? g1 : style === 'glass' ? `linear-gradient(145deg, ${g1}44, ${g2}66)` : `linear-gradient(145deg, ${g1}, ${g2})`;
+  const border = style === 'glass' ? '1px solid rgba(255,255,255,0.14)' : 'none';
+  const backdrop = style === 'glass' ? 'blur(14px)' : 'none';
+
+  return (
+    <div onClick={onOpen} style={{
+      display:'flex', flexDirection:'column', alignItems:'center', gap:6, cursor:'pointer',
+      width: small ? 60 : 72
+    }}>
+      <div style={{
+        width: size, height: size, borderRadius: small ? 14 : 16,
+        background: bg, backdropFilter: backdrop, WebkitBackdropFilter: backdrop, border: border,
+        display:'flex', alignItems:'center', justifyContent:'center', color: '#fff',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.18)',
+        transition: 'transform 0.15s ease'
+      }}
+      onMouseDown={(e)=>e.currentTarget.style.transform='scale(0.92)'}
+      onMouseUp={(e)=>e.currentTarget.style.transform='scale(1)'}
+      onMouseLeave={(e)=>e.currentTarget.style.transform='scale(1)'}
+      >
+        <Icon size={small?26:28} stroke={1.7}/>
+      </div>
+      {def.name && <div style={{fontSize: small?10.5:11.5, color:'var(--ink)', fontWeight:400, letterSpacing:'-0.01em', textShadow:'0 1px 2px rgba(0,0,0,0.6)'}}>{def.name}</div>}
+    </div>
+  );
+}
+
+const pillLink = {
+  padding:'8px 12px', borderRadius: 999, fontSize: 12.5,
+  background: 'rgba(255,255,255,0.1)', color:'var(--ink)', textDecoration:'none',
+  border:'1px solid rgba(255,255,255,0.12)'
+};
+
+function Confetti() {
+  const pieces = Array.from({length: 30});
+  return (
+    <>
+      {pieces.map((_,i)=>{
+        const left = (i*37)%100;
+        const delay = (i%10)*0.08;
+        const dur = 2 + (i%5)*0.3;
+        const color = ['#4a7cff','#e8b54a','#f0658e','#6cc17a','#8b6bf0'][i%5];
+        const rot = (i*37)%360;
+        return <span key={i} style={{
+          position:'absolute', top:-10, left:`${left}%`,
+          width:6, height:10, background:color, borderRadius:1,
+          transform:`rotate(${rot}deg)`,
+          animation:`fall ${dur}s ${delay}s ease-in forwards`
+        }}/>
+      })}
+      <style>{`
+        @keyframes fall {
+          0% { transform: translateY(0) rotate(0); opacity: 1; }
+          100% { transform: translateY(260px) rotate(540deg); opacity: 0; }
+        }
+      `}</style>
+    </>
+  );
+}
+
+function Spotlight({ open, onClose }) {
+  const [q, setQ] = React.useState('');
+  const [confetti, setConfetti] = React.useState(false);
+  const inputRef = React.useRef(null);
+
+  React.useEffect(()=>{
+    if (open) { setTimeout(()=> inputRef.current?.focus(), 280); }
+    else { setQ(''); setConfetti(false); }
+  }, [open]);
+
+  React.useEffect(()=>{
+    if (q.toLowerCase().replace(/\s+/g,'') === 'hireme') setConfetti(true);
+  }, [q]);
+
+  const corpus = [
+    ...APPS.map(a=>({label:a.name, hint:'App', kind:'app', id:a.id})),
+    {label:'MolFM-Lite', hint:'Publication -- arXiv 2026', kind:'info'},
+    {label:'SafeDispatch', hint:'RL -- TD3 Actor-Critic', kind:'info'},
+    {label:'AWS re:Invent 2025', hint:'Deliver Results Award', kind:'info'},
+    {label:'Buffalo, NY', hint:'Location', kind:'info'},
+    {label:'syedomer@buffalo.edu', hint:'Email', kind:'info'},
+  ];
+  const matches = q.trim() ? corpus.filter(c => c.label.toLowerCase().includes(q.toLowerCase())).slice(0,6) : [];
+
+  return (
+    <div style={{
+      position:'absolute', inset:0, zIndex: 60,
+      pointerEvents: open ? 'auto' : 'none',
+      opacity: open ? 1 : 0,
+      transition: 'opacity 0.3s ease',
+      background: 'rgba(5,5,8,0.55)',
+      backdropFilter: 'blur(28px)', WebkitBackdropFilter: 'blur(28px)',
+    }}>
+      <StatusBar time=""/>
+      <div style={{paddingTop: 62, padding:'62px 16px 0'}}>
+        <div style={{
+          display:'flex', alignItems:'center', gap:10,
+          background:'rgba(255,255,255,0.08)', borderRadius:12, padding:'10px 12px',
+          border:'1px solid rgba(255,255,255,0.08)'
+        }}>
+          <G.search size={18} stroke={1.6}/>
+          <input ref={inputRef} value={q} onChange={e=>setQ(e.target.value)}
+            placeholder="Search -- try 'hire me'"
+            style={{
+              flex:1, border:'none', outline:'none', background:'transparent',
+              color:'var(--ink)', fontSize:15, fontFamily:'inherit'
+            }}/>
+          <button onClick={onClose} style={{
+            background:'transparent', border:'none', color:'var(--ink-dim)',
+            fontSize:13, cursor:'pointer'
+          }}>Cancel</button>
+        </div>
+        {matches.length > 0 && (
+          <div style={{marginTop:14, background:'rgba(255,255,255,0.04)', borderRadius:14, overflow:'hidden', border:'1px solid rgba(255,255,255,0.06)'}}>
+            {matches.map((m,i)=>(
+              <div key={i} style={{
+                padding:'11px 14px', display:'flex', justifyContent:'space-between',
+                borderTop: i===0?'none':'1px solid rgba(255,255,255,0.05)'
+              }}>
+                <div>
+                  <div style={{fontSize:14, color:'var(--ink)'}}>{m.label}</div>
+                  <div style={{fontSize:11.5, color:'var(--ink-faint)'}}>{m.hint}</div>
+                </div>
+                <div className="mono" style={{fontSize:10, color:'var(--ink-faint)', alignSelf:'center'}}>{m.kind}</div>
+              </div>
+            ))}
+          </div>
+        )}
+        {confetti && (
+          <div style={{
+            marginTop: 24, padding: 22, borderRadius: 20,
+            background: 'linear-gradient(135deg, rgba(74,124,255,0.18), rgba(224,180,74,0.14))',
+            border: '1px solid rgba(255,255,255,0.12)',
+            textAlign:'center', position:'relative', overflow:'hidden'
+          }}>
+            <Confetti/>
+            <div style={{fontSize: 32, lineHeight:1.1, fontWeight:500, letterSpacing:'-0.02em'}}>Let's talk.</div>
+            <div style={{fontSize: 13, color:'var(--ink-dim)', marginTop:8, marginBottom: 16}}>
+              Open to AI/ML research roles, internships, and collaborations.
+            </div>
+            <div style={{display:'flex', gap:8, justifyContent:'center', flexWrap:'wrap'}}>
+              <a href="mailto:syedomer@buffalo.edu" style={pillLink}>syedomer@buffalo.edu</a>
+              <a href="https://linkedin.com/in/syed-omer-shah" target="_blank" style={pillLink}>LinkedIn</a>
+              <a href="https://github.com/Syedomershah99" target="_blank" style={pillLink}>GitHub</a>
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function HomeScreen({ onOpenApp, wallpaper, iconStyle }) {
+  const [spotlightOpen, setSpotOpen] = React.useState(false);
+  const [pullY, setPullY] = React.useState(0);
+  const [dragging, setDrag] = React.useState(false);
+  const startY = React.useRef(0);
+  const [time, setTime] = React.useState('');
+  React.useEffect(()=>{
+    const u = ()=>{ const d=new Date(); setTime(`${d.getHours()}:${d.getMinutes().toString().padStart(2,'0')}`);};
+    u(); const i=setInterval(u,30000); return ()=>clearInterval(i);
+  },[]);
+
+  const onStart = (y) => { startY.current = y; setDrag(true); };
+  const onMove = (y) => {
+    if (!dragging) return;
+    const dy = Math.max(0, y - startY.current);
+    setPullY(Math.min(dy, 200));
+    if (dy > 120) { setDrag(false); setPullY(0); setSpotOpen(true); }
+  };
+  const onEnd = () => { setDrag(false); setPullY(0); };
+
+  return (
+    <div style={{position:'absolute', inset:0, overflow:'hidden'}}
+      onMouseDown={(e)=>{ if (e.clientY < 140) onStart(e.clientY); }}
+      onMouseMove={(e)=>onMove(e.clientY)}
+      onMouseUp={onEnd} onMouseLeave={onEnd}
+      onTouchStart={(e)=>{ if (e.touches[0].clientY < 140) onStart(e.touches[0].clientY); }}
+      onTouchMove={(e)=>onMove(e.touches[0].clientY)}
+      onTouchEnd={onEnd}
+    >
+      <Wallpaper kind={wallpaper}/>
+      <div style={{position:'absolute', inset:0, background:'rgba(0,0,0,0.25)'}}/>
+      <StatusBar time={time}/>
+      <div style={{position:'absolute', top:72, left:0, right:0, bottom:128, padding:'0 22px',
+        transform: `translateY(${pullY*0.5}px)`, transition: dragging?'none':'transform 0.3s'}}>
+        <div style={{
+          display:'grid', gridTemplateColumns:'repeat(4, 1fr)', rowGap: 18, columnGap: 6,
+          paddingTop: 12
+        }}>
+          {APPS.map(app => (
+            <div key={app.id} style={{display:'flex', justifyContent:'center'}}>
+              <AppIcon def={app} style={iconStyle} onOpen={()=>onOpenApp(app.id)}/>
+            </div>
+          ))}
+        </div>
+        <div onClick={()=>setSpotOpen(true)} style={{
+          margin:'22px auto 0', width: 140,
+          display:'flex', alignItems:'center', justifyContent:'center', gap:6,
+          padding:'7px 14px', borderRadius: 999,
+          background:'rgba(255,255,255,0.08)', color:'var(--ink-dim)',
+          fontSize:12.5, cursor:'pointer', backdropFilter:'blur(10px)'
+        }}>
+          <G.search size={13} stroke={1.7}/> Search
+        </div>
+      </div>
+      <div style={{display:'flex', gap:6, justifyContent:'center', marginBottom:10}}>
+        <div style={{width:6, height:6, borderRadius:'50%', background:'#fff'}}/>
+      </div>
+      <div className="dock" style={{
+        position:'absolute', left: 12, right: 12, bottom: 24,
+        background:'rgba(22,22,28,0.5)',
+        backdropFilter:'blur(24px)', WebkitBackdropFilter:'blur(24px)',
+        border:'1px solid rgba(255,255,255,0.08)',
+        borderRadius: 28, padding: '12px 10px',
+        display:'flex', justifyContent:'space-around'
+      }}>
+        {DOCK.map(d => {
+          const content = <AppIcon def={{...d, name:''}} style={iconStyle} small onOpen={()=>{
+            if (d.app) onOpenApp(d.app);
+          }}/>;
+          return d.href
+            ? <a key={d.id} href={d.href} target="_blank" rel="noreferrer" style={{textDecoration:'none'}}>{content}</a>
+            : <div key={d.id}>{content}</div>;
+        })}
+      </div>
+      <HomeBar light/>
+      <Spotlight open={spotlightOpen} onClose={()=>setSpotOpen(false)}/>
+    </div>
+  );
+}
+
+// ============ APP SCREENS ============
+function AppHeader({ title, onBack, accent }) {
+  return (
+    <div style={{
+      position:'absolute', top:0, left:0, right:0, paddingTop: 50, paddingBottom: 10,
+      background: 'linear-gradient(to bottom, rgba(10,10,14,0.95), rgba(10,10,14,0.85) 70%, rgba(10,10,14,0))',
+      zIndex: 10
+    }}>
+      <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', padding:'0 16px'}}>
+        <button onClick={onBack} style={{
+          display:'flex', alignItems:'center', gap:2,
+          background:'transparent', border:'none', color: accent || 'var(--accent)', cursor:'pointer',
+          fontSize: 15, padding: 4, fontFamily:'inherit'
+        }}>
+          <G.chevronLeft size={22} stroke={2}/> Home
+        </button>
+        <div style={{fontSize: 16, fontWeight: 600, letterSpacing:'-0.01em'}}>{title}</div>
+        <div style={{width: 68}}/>
+      </div>
+    </div>
+  );
+}
+
+function Scroller({ children, pad = 16, topInset = 80 }) {
+  return (
+    <div className="no-scrollbar" style={{
+      position:'absolute', top: 0, left:0, right:0, bottom: 28,
+      overflowY:'auto', paddingTop: topInset, paddingLeft: pad, paddingRight: pad, paddingBottom: 30,
+      scrollbarWidth:'none'
+    }}>
+      <style>{`.no-scrollbar::-webkit-scrollbar{display:none}`}</style>
+      {children}
+    </div>
+  );
+}
+
+function Card({ children, style }) {
+  return <div style={{
+    background:'var(--card)', border:'1px solid var(--rule)',
+    borderRadius: 16, padding: 14, marginBottom: 10, ...style
+  }}>{children}</div>;
+}
+
+function Row({ label, value }) {
+  return (
+    <div style={{display:'flex', justifyContent:'space-between', padding:'9px 0', borderBottom:'1px solid var(--rule)'}}>
+      <span style={{color:'var(--ink-dim)', fontSize:13}}>{label}</span>
+      <span style={{color:'var(--ink)', fontSize:13.5}}>{value}</span>
+    </div>
+  );
+}
+
+function SectionTitle({ children }) {
+  return <div className="mono" style={{
+    fontSize: 10.5, letterSpacing:'0.14em', textTransform:'uppercase',
+    color: 'var(--ink-faint)', margin:'14px 2px 8px'
+  }}>{children}</div>;
+}
+
+const chipStyle = {
+  padding:'3px 8px', borderRadius: 6,
+  background: 'rgba(255,255,255,0.05)', border:'1px solid var(--rule)',
+  fontSize: 10.5, color:'var(--ink-dim)', fontFamily:'JetBrains Mono, monospace', letterSpacing:'0.03em'
+};
+
+function LinkRow({ label, value, href }) {
+  return (
+    <a href={href} target="_blank" rel="noreferrer" style={{
+      display:'flex', justifyContent:'space-between', padding:'10px 0',
+      borderBottom:'1px solid var(--rule)', textDecoration:'none'
+    }}>
+      <span style={{color:'var(--ink-dim)', fontSize:13}}>{label}</span>
+      <span style={{color:'var(--accent)', fontSize:13.5}}>{value} &rarr;</span>
+    </a>
+  );
+}
+
+function ContactRow({ icon, label, value, href, last }) {
+  return (
+    <a href={href} target="_blank" rel="noreferrer" style={{
+      display:'flex', alignItems:'center', gap:12, padding:'12px 0',
+      borderBottom: last?'none':'1px solid var(--rule)', textDecoration:'none'
+    }}>
+      <div style={{
+        width:36, height:36, borderRadius:10,
+        background:'rgba(255,255,255,0.05)', border:'1px solid var(--rule)',
+        display:'flex', alignItems:'center', justifyContent:'center', color:'var(--ink)'
+      }}>{icon}</div>
+      <div style={{flex:1}}>
+        <div style={{fontSize:11.5, color:'var(--ink-faint)', marginBottom:2}}>{label}</div>
+        <div style={{fontSize:14, color:'var(--ink)'}}>{value}</div>
+      </div>
+      <span style={{color:'var(--accent)', fontSize:16}}>&rarr;</span>
+    </a>
+  );
+}
+
+// --- About ---
+function AboutApp({ onBack }) {
+  return (
+    <>
+      <AppHeader title="About" onBack={onBack}/>
+      <Scroller>
+        <div style={{textAlign:'center', marginBottom:16}}>
+          <div style={{
+            width: 108, height: 108, borderRadius: '50%', margin: '0 auto 14px',
+            background: 'conic-gradient(from 210deg, #4a7cff, #8b6bf0, #e8b54a, #4a7cff)',
+            padding: 3
+          }}>
+            <div style={{
+              width:'100%', height:'100%', borderRadius:'50%',
+              background:'linear-gradient(145deg, #1e1e24, #0e0e12)',
+              display:'flex', alignItems:'center', justifyContent:'center',
+              color:'var(--ink)', fontSize:32, fontWeight:500, letterSpacing:'-0.02em'
+            }}>OS</div>
+          </div>
+          <div style={{fontSize:22, fontWeight:500, letterSpacing:'-0.02em'}}>Syed Omer Shah</div>
+          <div style={{fontSize:13, color:'var(--ink-dim)', marginTop:4}}>AI/ML Engineer &middot; Researcher &middot; Builder</div>
+          <div className="mono" style={{fontSize:11, color:'var(--ink-faint)', marginTop:6, letterSpacing:'0.05em'}}>BUFFALO, NY &middot; OPEN TO WORK</div>
+        </div>
+        <Card>
+          <p style={{margin:0, fontSize:13.5, lineHeight:1.55, color:'var(--ink)'}}>
+            Graduate researcher at the University at Buffalo focused on multi-modal learning, reinforcement learning
+            for constrained optimization, and high-performance simulation for scientific computing. First-author on
+            MolFM-Lite and VMatter; seven peer-reviewed publications across arXiv, Springer Nature, and SNMMI.
+          </p>
+        </Card>
+        <SectionTitle>Currently</SectionTitle>
+        <Card>
+          <Row label="Program" value="MS in Artificial Intelligence"/>
+          <Row label="University" value="SUNY Buffalo"/>
+          <Row label="Focus" value="HPC -- BayesOpt -- Multi-modal ML"/>
+          <Row label="Next" value="Ampere Computing -- Summer '26"/>
+        </Card>
+        <SectionTitle>Links</SectionTitle>
+        <Card>
+          <LinkRow label="Email"    value="syedomer@buffalo.edu" href="mailto:syedomer@buffalo.edu"/>
+          <LinkRow label="LinkedIn" value="in/syed-omer-shah"    href="https://linkedin.com/in/syed-omer-shah"/>
+          <LinkRow label="GitHub"   value="Syedomershah99"       href="https://github.com/Syedomershah99"/>
+          <LinkRow label="Hugging Face" value="OmerShah"          href="https://huggingface.co/OmerShah"/>
+        </Card>
+      </Scroller>
+    </>
+  );
+}
+
+// --- Education ---
+function EduApp({ onBack }) {
+  return (
+    <>
+      <AppHeader title="Education" onBack={onBack}/>
+      <Scroller>
+        <Card>
+          <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:6}}>
+            <span className="mono" style={{fontSize:10, color:'var(--accent)', letterSpacing:'0.12em'}}>CURRENT</span>
+            <span className="mono" style={{fontSize:10, color:'var(--ink-faint)'}}>AUG 2025 -- JUN 2027</span>
+          </div>
+          <div style={{fontSize:17, fontWeight:500, letterSpacing:'-0.01em', marginBottom:2}}>MS, Artificial Intelligence</div>
+          <div style={{fontSize:13.5, color:'var(--ink-dim)', marginBottom:10}}>University at Buffalo (SUNY)</div>
+          <div style={{fontSize:12.5, color:'var(--ink-dim)', lineHeight:1.5}}>
+            Coursework: Deep Learning, Reinforcement Learning, Computer Vision, Machine Learning, Pattern Recognition, Neural Networks.
+            Research with Dr. Yao (medical imaging) and Dr. Sivaraman (polymer discovery).
+          </div>
+        </Card>
+        <Card>
+          <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:6}}>
+            <span className="mono" style={{fontSize:10, color:'var(--ink-faint)', letterSpacing:'0.12em'}}>UNDERGRADUATE</span>
+            <span className="mono" style={{fontSize:10, color:'var(--ink-faint)'}}>DEC 2021 -- JUL 2025</span>
+          </div>
+          <div style={{fontSize:17, fontWeight:500, letterSpacing:'-0.01em', marginBottom:2}}>BE, Electronics & Communication</div>
+          <div style={{fontSize:13.5, color:'var(--ink-dim)', marginBottom:10}}>Osmania University</div>
+          <div style={{fontSize:12.5, color:'var(--ink-dim)', lineHeight:1.5}}>
+            Embedded systems, IoT, digital circuits, computer architecture. Head Undergraduate Researcher at R&D Cell -- Mars Rover perception and VMatter IoT health monitoring.
+          </div>
+        </Card>
+      </Scroller>
+    </>
+  );
+}
+
+// --- Skills ---
+const SKILLS = {
+  'Languages':        ['Python','C/C++','CUDA','SQL','Bash','JavaScript'],
+  'ML / DL':          ['PyTorch','TensorFlow','Scikit-learn','NumPy','Pandas','SciPy'],
+  'Domains':          ['Reinforcement Learning','Computer Vision','Multi-modal ML','NLP / RAG','Bayesian Optimization','GNNs'],
+  'Systems / HPC':    ['SLURM','Docker','Linux','Git','CI/CD','AWS'],
+  'GenAI':            ['LLM Fine-Tuning (LoRA/QLoRA)','Vector Databases','RAG','CrewAI','LangGraph','Quantization'],
+};
+
+function SkillsApp({ onBack }) {
+  return (
+    <>
+      <AppHeader title="Skills" onBack={onBack}/>
+      <Scroller>
+        {Object.entries(SKILLS).map(([cat, list], idx) => (
+          <div key={cat} style={{marginBottom: 14}}>
+            <SectionTitle>{cat}</SectionTitle>
+            <div style={{display:'flex', flexWrap:'wrap', gap:6}}>
+              {list.map((s, i) => (
+                <span key={s} style={{
+                  padding:'6px 10px', borderRadius: 999,
+                  background: i%3===0 ? 'color-mix(in oklch, var(--accent) 16%, transparent)' : 'var(--card)',
+                  border: '1px solid ' + (i%3===0?'color-mix(in oklch, var(--accent) 35%, transparent)':'var(--rule)'),
+                  fontSize: 12, color:'var(--ink)',
+                  animation: `skillIn 0.4s ${idx*0.1 + i*0.04}s both`
+                }}>{s}</span>
+              ))}
+            </div>
+          </div>
+        ))}
+        <style>{`
+          @keyframes skillIn {
+            from { opacity:0; transform: translateY(6px); }
+            to { opacity:1; transform: translateY(0); }
+          }
+        `}</style>
+      </Scroller>
+    </>
+  );
+}
+
+// --- Experience ---
+const EXP = [
+  {
+    role: 'Mentor -- Generative AI & LLMs', org: 'DeepLearning.AI',
+    range: 'Jan 2025 -- Jan 2026',
+    desc: 'Resolved 280+ technical queries across 7 cohorts on the AI/ML forum, debugging neural network implementations, transformer architectures, and deployment pipelines. 92%+ resolution rate.',
+    tags: ['Forum Support','PyTorch','Transformers']
+  },
+  {
+    role: 'AI Engineer Intern', org: 'JK Tech',
+    range: 'Mar 2025 -- May 2025',
+    desc: 'Built agentic AI pipeline using CrewAI with MongoDB ETL, orchestrating 5 specialized agents for end-to-end document automation. 4.5x throughput at 800 docs/sec.',
+    tags: ['CrewAI','MongoDB ETL','Agents']
+  },
+  {
+    role: 'Software Engineer Intern -- ML Infra', org: 'GNYAN.AI',
+    range: 'Dec 2023 -- Oct 2024',
+    desc: 'Deployed RAG pipeline with vector database serving 10K+ queries/month at p99 under 50ms. Optimized Llama-3 70B via bitsandbytes quantization (3.8x speedup).',
+    tags: ['RAG','Llama-3','bitsandbytes','Vector DB']
+  },
+  {
+    role: 'AI Intern -- Vision & Language', org: 'Alzair.AI',
+    range: 'Jan 2025 -- Mar 2025',
+    desc: 'Developed 5+ VLM-based perception solutions for enterprise clients. Built real-time visual understanding pipelines. Reduced inference latency by 40%, achieving 94% accuracy.',
+    tags: ['VLMs','Perception','Enterprise']
+  }
+];
+
+function ExpApp({ onBack }) {
+  return (
+    <>
+      <AppHeader title="Experience" onBack={onBack}/>
+      <Scroller>
+        {EXP.map((e, i) => (
+          <Card key={i}>
+            <div style={{display:'flex', justifyContent:'space-between', marginBottom:4}}>
+              <span className="mono" style={{fontSize:10, color:'var(--ink-faint)', letterSpacing:'0.1em'}}>{e.org.toUpperCase()}</span>
+              <span className="mono" style={{fontSize:10, color:'var(--ink-faint)'}}>{e.range}</span>
+            </div>
+            <div style={{fontSize:15.5, fontWeight:500, letterSpacing:'-0.01em', marginBottom:6}}>{e.role}</div>
+            <div style={{fontSize:12.5, color:'var(--ink-dim)', lineHeight:1.5, marginBottom:10}}>{e.desc}</div>
+            <div style={{display:'flex', gap:5, flexWrap:'wrap'}}>
+              {e.tags.map(t => <span key={t} style={chipStyle}>{t}</span>)}
+            </div>
+          </Card>
+        ))}
+      </Scroller>
+    </>
+  );
+}
+
+// --- Research ---
+const RESEARCH = [
+  {
+    title: 'HPC Simulation & Bayesian Optimization',
+    org: 'SUNY Research Foundation -- Dr. Yao',
+    range: 'Sep 2025 -- present',
+    body: 'Built ray-tracing simulation pipelines on HPC using Python and Slurm. Generated 1,280+ datasets across 80 geometry configurations. Developing Bayesian Optimization for SC-SPECT hardware design using GP surrogates. Two co-authored papers at SNMMI 2026.',
+    tags:['HPC','Slurm','BayesOpt','SPECT']
+  },
+  {
+    title: 'AI-Driven Polymer Discovery',
+    org: 'SUNY Buffalo -- Dr. Sivaraman',
+    range: 'Jan 2026 -- present',
+    body: 'Benchmarked 27 ML configurations including GNN architectures on 1,077 data points. Built optimization pipelines achieving 93.4% accuracy with 25x speedup via Bayesian Optimization.',
+    tags:['GNN','Bayesian Optimization','Materials']
+  },
+  {
+    title: 'Robotics & Embedded Vision',
+    org: 'R&D Cell -- Osmania University',
+    range: 'Dec 2021 -- Jul 2025',
+    body: 'Led Mars Rover replica with URDF-based robot modeling and AI-powered crop monitoring. Built real-time perception pipeline with sensor fusion. Developed VMatter IoT patient monitoring system (Oral at ICMLDSSIA-2025, Springer Nature).',
+    tags:['Perception','YOLO','IoT','Sensor Fusion']
+  }
+];
+
+function ResearchApp({ onBack }) {
+  const [open, setOpen] = React.useState(null);
+  return (
+    <>
+      <AppHeader title="Research" onBack={onBack}/>
+      <Scroller>
+        {RESEARCH.map((r, i) => {
+          const isOpen = open === i;
+          return (
+            <Card key={i} style={{padding: 0, overflow:'hidden'}}>
+              <div onClick={()=>setOpen(isOpen?null:i)} style={{padding:14, cursor:'pointer'}}>
+                <div style={{display:'flex', justifyContent:'space-between', marginBottom:4}}>
+                  <span className="mono" style={{fontSize:10, color:'var(--ink-faint)', letterSpacing:'0.1em'}}>{r.org.toUpperCase()}</span>
+                  <span style={{fontSize:14, color:'var(--ink-dim)', transition:'transform 0.2s', transform: isOpen?'rotate(180deg)':'none'}}>&#x2303;</span>
+                </div>
+                <div style={{fontSize:15, fontWeight:500, letterSpacing:'-0.01em'}}>{r.title}</div>
+                <div className="mono" style={{fontSize:10.5, color:'var(--ink-faint)', marginTop:4, letterSpacing:'0.04em'}}>{r.range}</div>
+              </div>
+              <div style={{
+                maxHeight: isOpen ? 400 : 0, overflow:'hidden',
+                transition:'max-height 0.35s cubic-bezier(0.2,0.8,0.2,1)'
+              }}>
+                <div style={{padding:'0 14px 14px'}}>
+                  <div style={{height:1, background:'var(--rule)', margin:'0 0 12px'}}/>
+                  <div style={{fontSize:12.5, color:'var(--ink-dim)', lineHeight:1.55, marginBottom:10}}>{r.body}</div>
+                  <div style={{display:'flex', gap:5, flexWrap:'wrap'}}>
+                    {r.tags.map(t=><span key={t} style={chipStyle}>{t}</span>)}
+                  </div>
+                </div>
+              </div>
+            </Card>
+          );
+        })}
+      </Scroller>
+    </>
+  );
+}
+
+// --- Projects ---
+const PROJECTS = [
+  { name:'SafeDispatch', tag:'Reinforcement Learning', blurb:'TD3 actor-critic for safety-constrained economic dispatch on IEEE 4-bus network. Within 3% cost optimality with zero constraint violations.', stack:['PyTorch','TD3','DC Power Flow'], accent:['#4a7cff','#1f3a88'], preview:'rl' },
+  { name:'MolFM-Lite', tag:'Multi-modal -- arXiv 2026', blurb:'Multi-modal Transformer fusing GNN (2D graph) and 3D conformer representations via cross-attention. 0.956 AUC on MoleculeNet. Open-sourced on GitHub.', stack:['Transformer','GNN','Cross-Attention'], accent:['#8b6bf0','#3e2d79'], preview:'mol' },
+  { name:'FabViz', tag:'Semiconductor Analytics', blurb:'Full-stack analytics dashboard for semiconductor fab data (1,567 wafers, 590 sensors). ML-based yield classification, SPC control charts, and process drift detection.', stack:['ML','SPC','Streamlit'], accent:['#3bb5a0','#18544a'], preview:'spc' },
+  { name:'Rover Vision', tag:'Real-time Perception', blurb:'Real-time perception pipeline with VLM-based self-supervised feature extraction. Fine-tuned YOLOv11n for crop/pest/disease detection. Won APJ Abdul Kalam Innovation Award.', stack:['YOLOv11n','SSL','VLM'], accent:['#e07a3c','#6e3a1b'], preview:'vision' },
+  { name:'SCAI', tag:'EdTech -- 1st / 300', blurb:'AI educational co-pilot with 5 modules: content generation, course discovery, document Q&A, image analysis, and practice tests. Won Next InTech Ideathon.', stack:['LLM','RAG','Streamlit'], accent:['#e8b54a','#7a5916'], preview:'edu' },
+];
+
+function ProjectPreview({ kind }) {
+  if (kind === 'rl') return (
+    <svg viewBox="0 0 220 120" width="100%" height="100%">
+      <rect width="220" height="120" fill="rgba(255,255,255,0.02)"/>
+      <polyline points="10,100 30,82 50,90 70,60 90,68 110,40 130,48 150,25 170,32 190,18 210,24" fill="none" stroke="#4a7cff" strokeWidth="1.8"/>
+      <polyline points="10,105 30,100 50,95 70,90 90,80 110,75 130,65 150,60 170,52 190,48 210,44" fill="none" stroke="rgba(255,255,255,0.22)" strokeWidth="1.2" strokeDasharray="3 3"/>
+      <text x="12" y="18" fill="rgba(255,255,255,0.4)" fontSize="9" fontFamily="JetBrains Mono">reward / episode</text>
+    </svg>
+  );
+  if (kind === 'mol') return (
+    <svg viewBox="0 0 220 120" width="100%" height="100%">
+      <rect width="220" height="120" fill="rgba(255,255,255,0.02)"/>
+      {[[60,60],[100,40],[140,60],[100,80],[80,30],[120,30],[160,40],[40,80]].map(([x,y],i)=>(
+        <circle key={i} cx={x} cy={y} r="5" fill="#8b6bf0"/>
+      ))}
+      {[[60,60,100,40],[100,40,140,60],[140,60,100,80],[100,80,60,60],[100,40,80,30],[100,40,120,30],[140,60,160,40],[60,60,40,80]].map(([x1,y1,x2,y2],i)=>(
+        <line key={i} x1={x1} y1={y1} x2={x2} y2={y2} stroke="rgba(139,107,240,0.5)" strokeWidth="1.2"/>
+      ))}
+      <text x="12" y="18" fill="rgba(255,255,255,0.4)" fontSize="9" fontFamily="JetBrains Mono">molecular graph</text>
+    </svg>
+  );
+  if (kind === 'spc') return (
+    <svg viewBox="0 0 220 120" width="100%" height="100%">
+      <rect width="220" height="120" fill="rgba(255,255,255,0.02)"/>
+      <line x1="10" y1="40" x2="210" y2="40" stroke="rgba(59,181,160,0.4)" strokeDasharray="3 3"/>
+      <line x1="10" y1="90" x2="210" y2="90" stroke="rgba(59,181,160,0.4)" strokeDasharray="3 3"/>
+      <polyline points="10,60 25,55 40,70 55,50 70,75 85,60 100,80 115,55 130,72 145,48 160,68 175,58 190,72 205,60" fill="none" stroke="#3bb5a0" strokeWidth="1.6"/>
+      {[60,55,70,50,75,60,80,55,72,48,68,58,72,60].map((y,i)=>(
+        <circle key={i} cx={10+i*15} cy={y} r="2" fill="#3bb5a0"/>
+      ))}
+      <text x="12" y="18" fill="rgba(255,255,255,0.4)" fontSize="9" fontFamily="JetBrains Mono">yield -- UCL / LCL</text>
+    </svg>
+  );
+  if (kind === 'vision') return (
+    <svg viewBox="0 0 220 120" width="100%" height="100%">
+      <rect width="220" height="120" fill="rgba(224,122,60,0.08)"/>
+      <rect x="40" y="30" width="50" height="40" fill="none" stroke="#e07a3c" strokeWidth="1.5"/>
+      <rect x="110" y="50" width="70" height="45" fill="none" stroke="#e07a3c" strokeWidth="1.5"/>
+      <rect x="160" y="20" width="30" height="28" fill="none" stroke="#e07a3c" strokeWidth="1.5"/>
+      <text x="42" y="28" fill="#e07a3c" fontSize="7" fontFamily="JetBrains Mono">crop 0.92</text>
+      <text x="112" y="48" fill="#e07a3c" fontSize="7" fontFamily="JetBrains Mono">terrain 0.88</text>
+      <text x="12" y="112" fill="rgba(255,255,255,0.4)" fontSize="9" fontFamily="JetBrains Mono">YOLOv11n -- 28fps</text>
+    </svg>
+  );
+  return (
+    <svg viewBox="0 0 220 120" width="100%" height="100%">
+      <rect width="220" height="120" fill="rgba(232,181,74,0.06)"/>
+      <rect x="20" y="30" width="80" height="14" rx="3" fill="#e8b54a" opacity="0.8"/>
+      <rect x="20" y="52" width="110" height="8" rx="2" fill="rgba(255,255,255,0.2)"/>
+      <rect x="20" y="64" width="90" height="8" rx="2" fill="rgba(255,255,255,0.2)"/>
+      <rect x="20" y="80" width="60" height="22" rx="4" fill="#e8b54a"/>
+      <text x="28" y="95" fill="#1a1410" fontSize="10" fontWeight="600" fontFamily="Geist">Solve</text>
+      <text x="12" y="18" fill="rgba(255,255,255,0.4)" fontSize="9" fontFamily="JetBrains Mono">lesson -- adaptive</text>
+    </svg>
+  );
+}
+
+const navBtn = {
+  width: 40, height: 40, borderRadius: 999,
+  background:'rgba(255,255,255,0.06)', border:'1px solid var(--rule)',
+  color:'var(--ink)', fontSize: 16, cursor:'pointer'
+};
+
+function ProjectsApp({ onBack }) {
+  const [idx, setIdx] = React.useState(0);
+  const p = PROJECTS[idx];
+  return (
+    <>
+      <AppHeader title="Projects" onBack={onBack}/>
+      <div style={{position:'absolute', inset:0, paddingTop: 80, paddingBottom: 30, display:'flex', flexDirection:'column'}}>
+        <div style={{padding:'0 16px', flex:1, display:'flex', flexDirection:'column'}}>
+          <div style={{
+            borderRadius: 20, overflow:'hidden',
+            background: `linear-gradient(160deg, ${p.accent[0]}33, ${p.accent[1]}55)`,
+            border:'1px solid rgba(255,255,255,0.08)',
+            padding: 16, flex: 1, display:'flex', flexDirection:'column',
+            transition: 'background 0.4s'
+          }}>
+            <div style={{height: 140, borderRadius: 12, overflow:'hidden', background:'rgba(0,0,0,0.25)', marginBottom: 14}}>
+              <ProjectPreview kind={p.preview}/>
+            </div>
+            <span className="mono" style={{fontSize:10, color:'var(--ink-dim)', letterSpacing:'0.12em'}}>{p.tag.toUpperCase()}</span>
+            <div style={{fontSize:22, fontWeight:500, letterSpacing:'-0.02em', margin:'4px 0 8px'}}>{p.name}</div>
+            <div style={{fontSize:13, color:'var(--ink-dim)', lineHeight:1.5, marginBottom: 14}}>{p.blurb}</div>
+            <div style={{display:'flex', gap:5, flexWrap:'wrap', marginTop:'auto'}}>
+              {p.stack.map(s => <span key={s} style={chipStyle}>{s}</span>)}
+            </div>
+          </div>
+          <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginTop: 14}}>
+            <button onClick={()=>setIdx((idx-1+PROJECTS.length)%PROJECTS.length)} style={navBtn}>&larr;</button>
+            <div style={{display:'flex', gap:6}}>
+              {PROJECTS.map((_,i)=>(
+                <div key={i} onClick={()=>setIdx(i)} style={{
+                  width: i===idx?22:6, height: 6, borderRadius: 3,
+                  background: i===idx?'var(--accent)':'rgba(255,255,255,0.2)',
+                  transition:'width 0.25s', cursor:'pointer'
+                }}/>
+              ))}
+            </div>
+            <button onClick={()=>setIdx((idx+1)%PROJECTS.length)} style={navBtn}>&rarr;</button>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+// --- Publications ---
+const PUBS = [
+  { title:'MolFM-Lite: Multi-Modal Molecular Property Prediction', venue:'arXiv', year:'2026', role:'First author', tint:'#8b6bf0' },
+  { title:'VMatter: AI-Enabled IoT-Based Patient Monitoring', venue:'ICMLDSSIA (Springer Nature) -- Oral', year:'2025', role:'First author', tint:'#3bb5a0' },
+  { title:'Quantitative Framework for Optimizing Multi-Pinhole SPECT Design', venue:'SNMMI -- Oral', year:'2026', role:'Co-author', tint:'#4a7cff' },
+  { title:'Quantifying Multiplexing-Induced Ghost Artifact in SPECT', venue:'SNMMI -- Poster', year:'2026', role:'Co-author', tint:'#4a7cff' },
+  { title:'Declining ICU Mortality of COVID-19', venue:'J. Clinical Medicine Research', year:'2021', role:'Co-author', tint:'#9ea3ad' },
+  { title:'Securing IoT Networks: Blockchain-Driven Approach', venue:'Published', year:'2024', role:'Author', tint:'#e07a3c' },
+  { title:'CVE Semantic: Vulnerability Patterns via Semantic Analysis', venue:'Published', year:'2024', role:'Author', tint:'#e07a3c' },
+];
+
+function PubsApp({ onBack }) {
+  return (
+    <>
+      <AppHeader title="Publications" onBack={onBack}/>
+      <Scroller>
+        {PUBS.map((p, i) => (
+          <Card key={i}>
+            <div style={{display:'flex', gap:12, alignItems:'flex-start'}}>
+              <div style={{
+                width: 4, borderRadius: 2, alignSelf:'stretch',
+                background: p.tint, opacity: 0.8, minHeight: 44
+              }}/>
+              <div style={{flex:1, minWidth:0}}>
+                <div style={{fontSize:14, fontWeight:500, letterSpacing:'-0.01em', lineHeight:1.35, marginBottom:6}}>{p.title}</div>
+                <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline'}}>
+                  <span className="mono" style={{fontSize:10.5, color:'var(--ink-dim)', letterSpacing:'0.06em'}}>{p.venue}</span>
+                  <span className="mono" style={{fontSize:10.5, color:'var(--ink-faint)'}}>{p.year}</span>
+                </div>
+                <div style={{fontSize:11.5, color:'var(--ink-faint)', marginTop:4}}>{p.role}</div>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </Scroller>
+    </>
+  );
+}
+
+// --- Awards ---
+const AWARDS = [
+  { name: 'Deliver Results Award', org: 'AWS -- re:Invent 2025', icon: '\u25C6' },
+  { name: 'APJ Abdul Kalam Innovation Award', org: 'National -- 2nd Place', icon: '\u25C6' },
+  { name: 'Next InTech -- 1st / 300', org: 'GradRight + Lehigh University', icon: '\u2605' },
+  { name: 'HackZ -- 1st / 350', org: 'Osmania TBI + Edwisely', icon: '\u2605' },
+  { name: 'Hack-the-Verse -- 1st / 550+', org: 'CMR National Hackathon', icon: '\u2605' },
+];
+
+function AwardsApp({ onBack }) {
+  return (
+    <>
+      <AppHeader title="Awards" onBack={onBack}/>
+      <Scroller>
+        {AWARDS.map((a,i)=>(
+          <Card key={i} style={{
+            background: 'linear-gradient(135deg, rgba(232,181,74,0.08), rgba(232,181,74,0.02))',
+            border: '1px solid rgba(232,181,74,0.25)'
+          }}>
+            <div style={{display:'flex', gap:14, alignItems:'center'}}>
+              <div style={{
+                width: 44, height: 44, borderRadius: 12,
+                background: 'linear-gradient(145deg, #e8b54a, #8a6620)',
+                display:'flex', alignItems:'center', justifyContent:'center',
+                fontSize: 22, color:'#1a1410', fontWeight: 700,
+                boxShadow: '0 2px 10px rgba(232,181,74,0.3)'
+              }}>{a.icon}</div>
+              <div style={{flex:1}}>
+                <div style={{fontSize: 14.5, fontWeight:500, letterSpacing:'-0.01em'}}>{a.name}</div>
+                <div className="mono" style={{fontSize: 10.5, color:'var(--ink-dim)', letterSpacing:'0.08em', marginTop:3}}>{a.org.toUpperCase()}</div>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </Scroller>
+    </>
+  );
+}
+
+// --- Talks ---
+const TALKS = [
+  { name: 'Amarathon Geek Talk', audience: 'Amazon User Group -- China', topic: 'Applied LLM Systems' },
+  { name: 'POCKET', audience: 'SNIST -- 2-Day Event', topic: 'Web Sockets using Python' },
+  { name: 'AI Verse', audience: 'LIET -- Community', topic: 'Streamlit for AI' },
+  { name: 'Discover DeepSeek', audience: 'IEEE SMC -- 200+ students', topic: 'Reasoning LLMs' },
+];
+
+function TalksApp({ onBack }) {
+  return (
+    <>
+      <AppHeader title="Talks" onBack={onBack}/>
+      <Scroller>
+        {TALKS.map((t,i)=>(
+          <Card key={i}>
+            <div style={{display:'flex', gap:12, alignItems:'center'}}>
+              <div style={{
+                width:36, height:36, borderRadius:10,
+                background:'color-mix(in oklch, var(--accent) 20%, transparent)',
+                border:'1px solid color-mix(in oklch, var(--accent) 40%, transparent)',
+                color:'var(--accent)', display:'flex', alignItems:'center', justifyContent:'center',
+              }}>
+                <G.talks size={18} stroke={1.8}/>
+              </div>
+              <div style={{flex:1}}>
+                <div style={{fontSize:14.5, fontWeight:500}}>{t.name}</div>
+                <div style={{fontSize:12, color:'var(--ink-dim)'}}>{t.audience}</div>
+                <div className="mono" style={{fontSize:10.5, color:'var(--ink-faint)', marginTop:3, letterSpacing:'0.04em'}}>"{t.topic}"</div>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </Scroller>
+    </>
+  );
+}
+
+// --- Leadership ---
+const LEAD = [
+  { role: 'Captain & Founder', org:'AWS Cloud Club MJCET', body:'Selected 87/1,300 globally. First AWS Cloud Club in Telangana. 1,200+ students impacted, 16+ workshops.', badge: '87 / 1300'},
+  { role: 'Community Builder', org:'AWS -- AI Engineering', body:'AWS Community Builder in AI Engineering domain (Mar 2025 -- Present). Technical content and community programming.', badge: 'Active'},
+  { role: 'Certified Instructor', org:'AWS Academy', body:'Organized free camps for 500+ students on EC2, S3, VPC, Bedrock, SageMaker, and more.', badge: '500+'},
+  { role: 'Lead Organizer', org:"DataNyx '24", body:"Telangana's first 24-hour Datathon at MJCET. Coordinated logistics, sponsors, and judging.", badge: '500+'},
+];
+
+function LeadApp({ onBack }) {
+  return (
+    <>
+      <AppHeader title="Leadership" onBack={onBack}/>
+      <Scroller>
+        {LEAD.map((l,i)=>(
+          <Card key={i}>
+            <div style={{display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:6}}>
+              <span className="mono" style={{fontSize:10, color:'var(--ink-faint)', letterSpacing:'0.1em'}}>{l.org.toUpperCase()}</span>
+              <span className="mono" style={{
+                fontSize:10, padding:'2px 7px', borderRadius: 999,
+                background:'color-mix(in oklch, var(--warm) 15%, transparent)',
+                color:'var(--warm)', border:'1px solid color-mix(in oklch, var(--warm) 30%, transparent)'
+              }}>{l.badge}</span>
+            </div>
+            <div style={{fontSize:15, fontWeight:500, letterSpacing:'-0.01em', marginBottom:6}}>{l.role}</div>
+            <div style={{fontSize:12.5, color:'var(--ink-dim)', lineHeight:1.5}}>{l.body}</div>
+          </Card>
+        ))}
+      </Scroller>
+    </>
+  );
+}
+
+// --- Contact ---
+function ContactApp({ onBack }) {
+  return (
+    <>
+      <AppHeader title="Contact" onBack={onBack}/>
+      <Scroller>
+        <Card style={{textAlign:'center', padding: 20}}>
+          <div style={{fontSize: 17, fontWeight:500, letterSpacing:'-0.02em'}}>Let's build something.</div>
+          <div style={{fontSize:12.5, color:'var(--ink-dim)', marginTop:6}}>Usually reply within a day.</div>
+        </Card>
+        <Card>
+          <ContactRow icon={<G.mail size={18} stroke={1.7}/>} label="Email" value="syedomer@buffalo.edu" href="mailto:syedomer@buffalo.edu"/>
+          <ContactRow icon={<G.contact size={18} stroke={1.7}/>} label="Phone" value="(716) 290-9800" href="tel:+17162909800"/>
+          <ContactRow icon={<G.linkedin size={18} stroke={1.7}/>} label="LinkedIn" value="in/syed-omer-shah" href="https://linkedin.com/in/syed-omer-shah"/>
+          <ContactRow icon={<G.github size={18} stroke={1.7}/>} label="GitHub" value="Syedomershah99" href="https://github.com/Syedomershah99"/>
+          <ContactRow icon={<G.bolt size={18} stroke={1.7}/>} label="Hugging Face" value="OmerShah" href="https://huggingface.co/OmerShah" last/>
+        </Card>
+      </Scroller>
+    </>
+  );
+}
+
+// --- Resume ---
+function ResumeApp({ onBack }) {
+  return (
+    <>
+      <AppHeader title="Resume" onBack={onBack}/>
+      <Scroller>
+        <div style={{
+          borderRadius: 14, overflow:'hidden',
+          background: 'linear-gradient(180deg, #f8f7f4, #e8e6e0)',
+          color:'#18181e', padding: 18, marginBottom: 14,
+          aspectRatio: '8.5/11',
+          position:'relative'
+        }}>
+          <div style={{fontSize: 16, fontWeight:600, letterSpacing:'-0.02em'}}>Syed Omer Shah</div>
+          <div className="mono" style={{fontSize:9, color:'#555', letterSpacing:'0.05em', marginTop:2}}>AI/ML -- MS BUFFALO -- BUFFALO, NY</div>
+          <div style={{height:1, background:'#c6c3bc', margin:'10px 0'}}/>
+          {['EDUCATION','EXPERIENCE','RESEARCH','PUBLICATIONS','AWARDS','SKILLS'].map((s,i)=>(
+            <div key={s} style={{marginBottom:8}}>
+              <div className="mono" style={{fontSize:8, letterSpacing:'0.15em', color:'#18181e', fontWeight:600}}>{s}</div>
+              <div style={{height:3, background:'#24242a', width:`${40+(i*7)%40}%`, marginTop:3, borderRadius:1}}/>
+              <div style={{height:2, background:'#b4b1aa', width:'95%', marginTop:3, borderRadius:1}}/>
+              <div style={{height:2, background:'#b4b1aa', width:'82%', marginTop:3, borderRadius:1}}/>
+              <div style={{height:2, background:'#b4b1aa', width:'88%', marginTop:3, borderRadius:1}}/>
+            </div>
+          ))}
+        </div>
+        <a href="mailto:syedomer@buffalo.edu?subject=Resume%20Request" style={{
+          display:'block', width:'100%', padding:'14px', borderRadius: 14,
+          background:'var(--accent)', color:'#06121f', border:'none',
+          fontSize: 14.5, fontWeight: 600, letterSpacing:'-0.01em',
+          cursor:'pointer', fontFamily:'inherit', textDecoration:'none', textAlign:'center'
+        }}>
+          Request Resume &darr;
+        </a>
+        <div style={{textAlign:'center', fontSize:11, color:'var(--ink-faint)', marginTop:10}}>
+          Updated April 2026
+        </div>
+      </Scroller>
+    </>
+  );
+}
+
+// --- Router ---
+function AppRouter({ id, onBack }) {
+  const map = {
+    about: AboutApp, edu: EduApp, skills: SkillsApp, exp: ExpApp,
+    research: ResearchApp, projects: ProjectsApp, pubs: PubsApp, awards: AwardsApp,
+    talks: TalksApp, lead: LeadApp, contact: ContactApp, resume: ResumeApp,
+  };
+  const C = map[id];
+  if (!C) return null;
+  return (
+    <div style={{position:'absolute', inset:0, background:'#0a0a0e'}}>
+      <C onBack={onBack}/>
+    </div>
+  );
+}
+
+// ============ ROOT APP ============
+function applyAccent(which) {
+  const map = {
+    blue:   { accent: 'oklch(0.72 0.14 230)', ink: 'oklch(0.96 0.02 230)' },
+    violet: { accent: 'oklch(0.72 0.14 290)', ink: 'oklch(0.96 0.02 290)' },
+    amber:  { accent: 'oklch(0.78 0.14 75)',  ink: 'oklch(0.98 0.02 75)' },
+    mint:   { accent: 'oklch(0.78 0.12 170)', ink: 'oklch(0.98 0.02 170)' },
+  };
+  const v = map[which] || map.mint;
+  document.documentElement.style.setProperty('--accent', v.accent);
+  document.documentElement.style.setProperty('--accent-ink', v.ink);
+}
+
+function TweaksPanel({ open, tweaks, update, onClose }) {
+  return (
+    <div className={`tweaks ${open?'open':''}`}>
+      <div style={{display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:10}}>
+        <h4>Tweaks</h4>
+        <button onClick={onClose} style={{background:'none', border:'none', color:'var(--ink-dim)', cursor:'pointer', fontSize:16}}>&times;</button>
+      </div>
+      <div className="row">
+        <label>Accent</label>
+        <div className="pills">
+          {[['blue','Signal'],['violet','Orbit'],['amber','Ember'],['mint','Mint']].map(([k,l])=>(
+            <div key={k} className={`pill ${tweaks.accent===k?'active':''}`} onClick={()=>update({accent:k})}>{l}</div>
+          ))}
+        </div>
+      </div>
+      <div className="row">
+        <label>Wallpaper</label>
+        <div className="pills">
+          {[['grid','Neural'],['topography','Topo'],['plain','Void']].map(([k,l])=>(
+            <div key={k} className={`pill ${tweaks.wallpaper===k?'active':''}`} onClick={()=>update({wallpaper:k})}>{l}</div>
+          ))}
+        </div>
+      </div>
+      <div className="row">
+        <label>Icon style</label>
+        <div className="pills">
+          {[['tinted','Tinted'],['glass','Glass'],['flat','Flat']].map(([k,l])=>(
+            <div key={k} className={`pill ${tweaks.iconStyle===k?'active':''}`} onClick={()=>update({iconStyle:k})}>{l}</div>
+          ))}
+        </div>
+      </div>
+      <div style={{fontSize:10.5, color:'var(--ink-faint)', marginTop:10, lineHeight:1.5}}>
+        Tip: try the search on the home screen -- type "hire me".
+      </div>
+    </div>
+  );
+}
+
+function App() {
+  const [stage, setStage] = React.useState('lock');
+  const [app, setApp] = React.useState(null);
+  const [scale, setScale] = React.useState(1);
+  const [tweaks, setTweaks] = React.useState(window.TWEAK_DEFAULTS);
+  const [tweaksOpen, setTweaksOpen] = React.useState(false);
+
+  const update = (patch) => setTweaks(t => ({...t, ...patch}));
+
+  React.useEffect(() => {
+    try {
+      const s = localStorage.getItem('os.stage');
+      const a = localStorage.getItem('os.app');
+      if (s) setStage(s);
+      if (a && a !== 'null') setApp(a);
+    } catch(e) {}
+  }, []);
+
+  React.useEffect(() => {
+    try { localStorage.setItem('os.stage', stage); localStorage.setItem('os.app', app || 'null'); } catch(e){}
+  }, [stage, app]);
+
+  React.useEffect(() => { applyAccent(tweaks.accent); }, [tweaks.accent]);
+
+  React.useEffect(() => {
+    const onResize = () => {
+      const w = window.innerWidth, h = window.innerHeight;
+      const availW = Math.min(w - 40, 500);
+      const availH = h - 40;
+      const sW = availW / 414;
+      const sH = availH / 868;
+      setScale(Math.min(sW, sH, 1.05));
+    };
+    onResize();
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  const openApp = (id) => { setApp(id); setStage('app'); };
+  const backHome = () => { setStage('home'); setApp(null); };
+  const reset = () => { setStage('lock'); setApp(null); };
+
+  return (
+    <div style={{
+      position:'absolute', inset:0,
+      display:'flex', alignItems:'center', justifyContent:'center'
+    }}>
+      <button onClick={reset} style={{
+        position:'fixed', top: 14, right: 14, zIndex: 100,
+        background:'rgba(20,20,26,0.6)', backdropFilter:'blur(12px)',
+        border:'1px solid rgba(255,255,255,0.08)',
+        color:'var(--ink-dim)', padding:'6px 11px', borderRadius: 999,
+        fontSize: 11, fontFamily:'JetBrains Mono, monospace', letterSpacing:'0.06em',
+        cursor:'pointer'
+      }}>LOCK</button>
+
+      <button onClick={()=>setTweaksOpen(!tweaksOpen)} style={{
+        position:'fixed', top: 14, right: 80, zIndex: 100,
+        background:'rgba(20,20,26,0.6)', backdropFilter:'blur(12px)',
+        border:'1px solid rgba(255,255,255,0.08)',
+        color:'var(--ink-dim)', padding:'6px 11px', borderRadius: 999,
+        fontSize: 11, fontFamily:'JetBrains Mono, monospace', letterSpacing:'0.06em',
+        cursor:'pointer'
+      }}>TWEAKS</button>
+
+      <Device scale={scale}>
+        <SensorPill/>
+        {stage === 'lock' && (
+          <LockScreen onUnlock={()=>setStage('home')} wallpaper={tweaks.wallpaper}/>
+        )}
+        {stage !== 'lock' && (
+          <HomeScreen onOpenApp={openApp} wallpaper={tweaks.wallpaper} iconStyle={tweaks.iconStyle}/>
+        )}
+        {stage === 'app' && (
+          <div style={{
+            position:'absolute', inset:0, animation: 'appOpen 0.35s cubic-bezier(0.2,0.8,0.2,1) both',
+            zIndex: 40
+          }}>
+            <AppRouter id={app} onBack={backHome}/>
+            <HomeBar light onTap={backHome}/>
+          </div>
+        )}
+      </Device>
+
+      <style>{`
+        @keyframes appOpen {
+          from { transform: scale(0.85); opacity: 0; }
+          to { transform: scale(1); opacity: 1; }
+        }
+      `}</style>
+
+      <TweaksPanel open={tweaksOpen} tweaks={tweaks} update={update} onClose={()=>setTweaksOpen(false)}/>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
